@@ -1,0 +1,519 @@
+protocol:
+  id: convergence-window-protocol-v0.1
+  name: Yin-Yang Convergence Window Protocol
+  version: "0.1.0"
+  status: draft
+  release_type: initial_draft
+
+  purpose: >
+    Yin-Yang Convergence Window Protocol defines a control-layer model for
+    describing convergence windows, phase stability, amplitude thresholds,
+    rebalance timing, overcorrection prevention, and stability decisions
+    in oscillating reasoning systems.
+
+  summary: >
+    This protocol focuses on the question of when an oscillating reasoning
+    process has become stable enough to stop, compress, delay, return, or
+    continue minimally. It extends the reasoning-control lineage of
+    Yin-Yang Five-Phase Reasoning Protocol and Yin-Yang Oscillation Control
+    Protocol by defining convergence-oriented control structures.
+
+  related_protocols:
+    - name: Yin-Yang Five-Phase Reasoning Protocol
+      relationship: parent_reasoning_protocol
+      role: >
+        Defines Yin-Yang state transitions, Five-Phase reasoning roles,
+        dynamic control metrics, and Yin-Yang Balancer.
+
+    - name: Yin-Yang Oscillation Control Protocol
+      relationship: oscillation_control_layer
+      role: >
+        Defines oscillation control, amplitude adjustment, and dynamic
+        rebalance behavior.
+
+  non_goals:
+    - "Does not claim measured hardware-level energy reduction."
+    - "Does not claim benchmark-proven performance improvement."
+    - "Does not replace model architecture."
+    - "Does not define a complete inference engine."
+    - "Does not guarantee safer AI behavior."
+    - "Does not claim production readiness."
+    - "Does not present Yin-Yang or Five-Phase theory as a scientific law."
+
+scope:
+  included:
+    - convergence_window_detection
+    - phase_stability_scoring
+    - amplitude_threshold_control
+    - rebalance_timing
+    - overcorrection_prevention
+    - settling_period_control
+    - stability_decision
+    - delayed_return_readiness
+    - stop_readiness_after_oscillation
+
+  excluded:
+    - hardware_power_measurement
+    - benchmark_evaluation
+    - model_training_method
+    - neural_architecture_definition
+    - complete_runtime_engine
+    - safety_boundary_bypass
+
+core_principle: >
+  Reasoning should breathe, but breathing should also settle.
+  An oscillating reasoning process should be able to detect when it has
+  reached a usable convergence window before stopping, delaying, returning,
+  or continuing minimally.
+
+conceptual_flow:
+  - step: oscillation_detected
+    description: >
+      The reasoning process is moving between expansion, critique,
+      compression, memory, and return.
+
+  - step: stability_measured
+    description: >
+      Phase stability, amplitude delta, context drift, redundancy pressure,
+      and stop readiness are evaluated.
+
+  - step: convergence_window_evaluated
+    description: >
+      The system checks whether current reasoning has entered a usable
+      stability range.
+
+  - step: rebalance_timing_checked
+    description: >
+      The system determines whether to rebalance now, wait, or avoid
+      overcorrection.
+
+  - step: stability_decision_selected
+    description: >
+      The system selects whether to continue expansion, compress, rebalance,
+      delay return, enter convergence, or stop after settling.
+
+control_layers:
+  oscillation_input_layer:
+    purpose: >
+      Receives current reasoning movement signals from an upstream
+      oscillation or balance controller.
+
+    inputs:
+      - yang_level
+      - yin_level
+      - balance_pressure
+      - current_phase
+      - active_phase_count
+      - expansion_depth
+      - compression_level
+      - critique_pressure
+      - memory_settling_required
+
+  stability_measurement_layer:
+    purpose: >
+      Measures whether the current phase sequence is becoming stable,
+      unstable, excessive, premature, or ready for convergence.
+
+    metrics:
+      phase_stability_score:
+        type: normalized_float
+        range: [0.0, 1.0]
+        description: >
+          Indicates how stable the current phase sequence appears.
+
+      amplitude_delta:
+        type: normalized_float
+        range: [0.0, 1.0]
+        description: >
+          Indicates the difference between expansion and restraint signals.
+
+      context_drift:
+        type: normalized_float
+        range: [0.0, 1.0]
+        description: >
+          Indicates how far the current reasoning has moved from the original
+          task or context.
+
+      redundancy_pressure:
+        type: normalized_float
+        range: [0.0, 1.0]
+        description: >
+          Indicates repeated, unnecessary, or low-value reasoning expansion.
+
+      stop_readiness:
+        type: normalized_float
+        range: [0.0, 1.0]
+        description: >
+          Indicates whether the current reasoning state appears sufficient
+          enough to stop after any required settling or memory retention.
+
+  convergence_window_layer:
+    purpose: >
+      Determines whether the current reasoning state has entered a usable
+      convergence window.
+
+    fields:
+      status:
+        allowed_values:
+          - closed
+          - opening
+          - open
+          - unstable
+          - expired
+
+      confidence:
+        type: normalized_float
+        range: [0.0, 1.0]
+
+      allowed_duration:
+        allowed_values:
+          - brief
+          - short
+          - moderate
+          - extended
+
+      entry_condition:
+        description: >
+          Conditions that indicate the system may enter a convergence window.
+
+      exit_condition:
+        description: >
+          Conditions that indicate the system should leave or reject the
+          convergence window.
+
+  rebalance_timing_layer:
+    purpose: >
+      Determines whether rebalancing should happen immediately, later,
+      or not at all.
+
+    fields:
+      rebalance_required:
+        type: boolean
+
+      rebalance_interval:
+        allowed_values:
+          - immediate
+          - short
+          - moderate
+          - delayed
+          - none
+
+      overcorrection_risk:
+        allowed_values:
+          - low
+          - medium
+          - high
+
+      next_check:
+        allowed_values:
+          - next_phase
+          - after_settling
+          - after_memory_return
+          - final_review
+          - no_recheck_required
+
+  stability_decision_layer:
+    purpose: >
+      Produces the final convergence-related control decision.
+
+    allowed_actions:
+      - continue_expansion
+      - compress_then_continue
+      - rebalance
+      - enter_convergence_window
+      - delay_return
+      - stop_after_settling
+      - reject_convergence
+      - request_additional_integration
+
+convergence_window:
+  default_policy:
+    status: opening
+    minimum_phase_stability_score: 0.70
+    maximum_amplitude_delta: 0.35
+    maximum_context_drift: 0.30
+    maximum_redundancy_pressure: 0.45
+    minimum_stop_readiness: 0.65
+
+  entry_conditions:
+    - phase_stability_score_at_or_above_minimum
+    - amplitude_delta_within_threshold
+    - context_drift_below_limit
+    - redundancy_pressure_below_limit
+    - stop_readiness_sufficient_or_rising
+
+  exit_conditions:
+    - amplitude_delta_exceeds_threshold
+    - context_drift_exceeds_limit
+    - phase_conflict_reappears
+    - redundancy_pressure_rises
+    - stop_readiness_drops
+    - unresolved_core_context_detected
+
+phase_stability:
+  interpretation:
+    low:
+      range: [0.0, 0.30]
+      meaning: unstable
+      typical_action: continue_integration_or_rebalance
+
+    medium:
+      range: [0.31, 0.70]
+      meaning: partially_stable
+      typical_action: monitor_or_compress_then_continue
+
+    high:
+      range: [0.71, 1.0]
+      meaning: stable
+      typical_action: enter_convergence_window_or_stop_after_settling
+
+  contributing_factors:
+    - low_phase_conflict
+    - reduced_amplitude_delta
+    - stable_context_integration
+    - declining_redundancy_pressure
+    - rising_stop_readiness
+    - low_overcorrection_risk
+
+amplitude_threshold:
+  default:
+    maximum_delta: 0.35
+    warning_delta: 0.50
+    critical_delta: 0.70
+
+  interpretation:
+    within_threshold: >
+      Oscillation remains within an acceptable convergence range.
+
+    warning: >
+      Oscillation is becoming unstable and should be monitored or compressed.
+
+    critical: >
+      Oscillation is too wide and should trigger rebalance or delayed return.
+
+  examples:
+    acceptable:
+      yang_level: 0.68
+      yin_level: 0.46
+      amplitude_delta: 0.22
+      decision: enter_convergence_window
+
+    excessive:
+      yang_level: 0.91
+      yin_level: 0.18
+      amplitude_delta: 0.73
+      decision: rebalance
+
+rebalance_timing:
+  default_policy:
+    minimum_interval: short
+    avoid_immediate_reversal: true
+    overcorrection_limit: medium
+    require_settling_after_rebalance: true
+
+  timing_options:
+    immediate:
+      use_when:
+        - critical_amplitude_delta
+        - high_context_drift
+        - severe_phase_conflict
+
+    short:
+      use_when:
+        - rising_redundancy_pressure
+        - medium_overcorrection_risk
+        - partial_stability_detected
+
+    moderate:
+      use_when:
+        - convergence_window_opening
+        - phase_stability_score_medium
+        - stop_readiness_rising
+
+    delayed:
+      use_when:
+        - memory_settling_required
+        - delayed_critique_needed
+        - background_return_expected
+
+    none:
+      use_when:
+        - phase_stability_score_high
+        - amplitude_delta_within_threshold
+        - stop_readiness_high
+
+overcorrection_prevention:
+  purpose: >
+    Prevents the system from switching too aggressively between expansion
+    and suppression.
+
+  unstable_loop_example:
+    - expand
+    - suppress
+    - expand
+    - suppress
+    - expand
+
+  controls:
+    minimum_settling_period: short
+    maximum_rebalance_attempts: 2
+    avoid_opposite_action_immediately: true
+    require_context_check_before_reversal: true
+
+settling_period:
+  purpose: >
+    Defines a stabilization period before final stopping, delayed return,
+    or minimal continuation.
+
+  allowed_values:
+    - none
+    - brief
+    - short
+    - moderate
+
+  default: short
+
+  use_when:
+    - after_compression
+    - after_critique
+    - after_rebalance
+    - after_memory_return
+    - before_final_stop
+
+stability_decisions:
+  continue_expansion:
+    use_when:
+      - phase_stability_score_low
+      - stop_readiness_low
+      - amplitude_delta_within_threshold
+    description: >
+      Continue reasoning expansion because the answer is not yet sufficiently
+      stable or complete.
+
+  compress_then_continue:
+    use_when:
+      - redundancy_pressure_high
+      - stop_readiness_medium
+      - context_drift_low_or_medium
+    description: >
+      Compress unnecessary material before continuing with minimal expansion.
+
+  rebalance:
+    use_when:
+      - amplitude_delta_exceeds_threshold
+      - phase_conflict_detected
+      - over_expansion_or_over_suppression_detected
+    description: >
+      Rebalance reasoning toward a more stable state before continuing.
+
+  enter_convergence_window:
+    use_when:
+      - phase_stability_score_high
+      - amplitude_delta_within_threshold
+      - context_drift_low
+      - stop_readiness_medium_or_high
+    description: >
+      Enter a temporary stable range where final stopping, delayed return,
+      or minimal continuation can be considered.
+
+  delay_return:
+    use_when:
+      - memory_settling_required
+      - delayed_critique_needed
+      - convergence_window_opening
+    description: >
+      Delay final output or next reasoning step until memory settling or
+      critique return becomes useful.
+
+  stop_after_settling:
+    use_when:
+      - convergence_window_open
+      - stop_readiness_high
+      - redundancy_pressure_low
+      - unresolved_core_context_absent
+    description: >
+      Stop after a short settling period because reasoning is stable enough.
+
+  reject_convergence:
+    use_when:
+      - context_drift_high
+      - amplitude_delta_critical
+      - phase_stability_score_low
+    description: >
+      Reject the current convergence window and require rebalance or
+      additional integration.
+
+  request_additional_integration:
+    use_when:
+      - earth_integration_incomplete
+      - phase_conflict_unresolved
+      - useful_context_not_yet_integrated
+    description: >
+      Route reasoning back to integration before deciding whether to stop,
+      delay, or rebalance.
+
+example_profile:
+  name: basic_convergence_after_oscillation
+  description: >
+    A reasoning process begins with strong expansion, receives compression,
+    stabilizes through integration, and enters a convergence window before
+    stopping after settling.
+
+  input_state:
+    yang_level: 0.82
+    yin_level: 0.41
+    balance_pressure: 0.62
+    current_phase: earth
+    active_phase_count: 3
+    expansion_depth: 4
+    compression_level: 0.52
+    critique_pressure: 0.48
+    memory_settling_required: false
+
+  measurement:
+    phase_stability_score: 0.74
+    amplitude_delta: 0.31
+    context_drift: 0.22
+    redundancy_pressure: 0.38
+    stop_readiness: 0.72
+
+  convergence_window:
+    status: open
+    confidence: 0.76
+    allowed_duration: short
+
+  rebalance_timing:
+    rebalance_required: false
+    rebalance_interval: none
+    overcorrection_risk: low
+    next_check: final_review
+
+  stability_decision:
+    action: stop_after_settling
+    reason: convergence_window_open
+
+validation_notes:
+  expected_valid_yaml: true
+  expected_version: "0.1.0"
+
+  required_sections:
+    - protocol
+    - scope
+    - core_principle
+    - conceptual_flow
+    - control_layers
+    - convergence_window
+    - phase_stability
+    - amplitude_threshold
+    - rebalance_timing
+    - overcorrection_prevention
+    - settling_period
+    - stability_decisions
+    - example_profile
+
+metadata:
+  created_for: yin-yang-convergence-window-protocol
+  specification_version: "0.1.0"
+  recommended_status: experimental
+  license: MIT
+
