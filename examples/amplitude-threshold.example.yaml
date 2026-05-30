@@ -1,0 +1,344 @@
+example:
+  id: amplitude-threshold-example
+  name: Amplitude Threshold Example
+  version: "0.1.0"
+  status: experimental
+
+  description: >
+    Demonstrates how amplitude_threshold can be used to evaluate whether
+    oscillation between Yang expansion and Yin restraint remains within an
+    acceptable convergence range, requires monitoring, or triggers rebalance.
+
+  related_spec:
+    - spec/convergence-window-protocol-v0.1.yaml
+    - schemas/convergence-window.schema.json
+
+purpose: >
+  This example shows how amplitude_delta may guide convergence window
+  decisions, rebalance timing, and overcorrection prevention.
+
+input:
+  user_request: >
+    Determine whether the current reasoning oscillation is stable enough
+    to enter a convergence window or whether it should be rebalanced.
+
+  expected_behavior:
+    - calculate_amplitude_delta
+    - compare_delta_against_thresholds
+    - detect_excessive_oscillation
+    - avoid_overcorrection
+    - select_stability_decision
+
+amplitude_threshold_model:
+  normalized_range:
+    minimum: 0.0
+    maximum: 1.0
+
+  default_thresholds:
+    maximum_delta: 0.35
+    warning_delta: 0.50
+    critical_delta: 0.70
+
+  interpretation:
+    within_threshold:
+      range: [0.0, 0.35]
+      meaning: acceptable_oscillation
+      typical_action: enter_or_monitor_convergence_window
+
+    warning:
+      range: [0.36, 0.50]
+      meaning: elevated_oscillation
+      typical_action: monitor_or_compress_then_continue
+
+    high:
+      range: [0.51, 0.70]
+      meaning: unstable_oscillation
+      typical_action: rebalance_or_delay_return
+
+    critical:
+      range: [0.71, 1.0]
+      meaning: excessive_oscillation
+      typical_action: immediate_rebalance
+
+calculation_method:
+  formula: "absolute_difference_between_yang_level_and_yin_level"
+
+  example:
+    yang_level: 0.82
+    yin_level: 0.41
+    amplitude_delta: 0.41
+
+  note: >
+    This is a protocol-level control indicator, not a physical measurement.
+    Implementations may refine the calculation method.
+
+cases:
+  - case_id: acceptable_amplitude_case
+    description: >
+      Yang and Yin signals are both active, but their difference remains
+      within the acceptable threshold. The reasoning flow may enter a
+      convergence window if other stability signals are also sufficient.
+
+    oscillation_input:
+      yang_level: 0.68
+      yin_level: 0.46
+      balance_pressure: 0.62
+      current_phase: earth
+      active_phase_count: 3
+      expansion_depth: 3
+      compression_level: 0.57
+      critique_pressure: 0.41
+      memory_settling_required: false
+
+    stability_measurement:
+      phase_stability_score: 0.74
+      amplitude_delta: 0.22
+      context_drift: 0.18
+      redundancy_pressure: 0.34
+      stop_readiness: 0.71
+
+    threshold_evaluation:
+      threshold_band: within_threshold
+      maximum_delta: 0.35
+      warning_delta: 0.50
+      critical_delta: 0.70
+      threshold_exceeded: false
+
+    convergence_window:
+      status: open
+      confidence: 0.76
+      allowed_duration: short
+
+    rebalance_timing:
+      rebalance_required: false
+      rebalance_interval: none
+      overcorrection_risk: low
+      next_check: final_review
+
+    stability_decision:
+      action: stop_after_settling
+      reason: amplitude_delta_within_threshold
+
+      explanation: >
+        The amplitude delta is within the acceptable threshold. Since phase
+        stability and stop readiness are also sufficient, the system may stop
+        after a short settling period.
+
+  - case_id: warning_amplitude_case
+    description: >
+      The amplitude delta is rising. The reasoning flow is not yet unstable,
+      but the system should avoid further expansion until redundancy and
+      context alignment are checked.
+
+    oscillation_input:
+      yang_level: 0.76
+      yin_level: 0.34
+      balance_pressure: 0.68
+      current_phase: fire
+      active_phase_count: 4
+      expansion_depth: 4
+      compression_level: 0.35
+      critique_pressure: 0.44
+      memory_settling_required: false
+
+    stability_measurement:
+      phase_stability_score: 0.61
+      amplitude_delta: 0.42
+      context_drift: 0.27
+      redundancy_pressure: 0.49
+      stop_readiness: 0.56
+
+    threshold_evaluation:
+      threshold_band: warning
+      maximum_delta: 0.35
+      warning_delta: 0.50
+      critical_delta: 0.70
+      threshold_exceeded: true
+
+    convergence_window:
+      status: opening
+      confidence: 0.58
+      allowed_duration: brief
+
+    rebalance_timing:
+      rebalance_required: false
+      rebalance_interval: short
+      overcorrection_risk: medium
+      next_check: after_settling
+
+    stability_decision:
+      action: compress_then_continue
+      reason: amplitude_delta_warning
+
+      explanation: >
+        The amplitude delta has exceeded the preferred convergence threshold
+        but has not reached an unstable range. The system should compress
+        redundant expansion, allow a short settling period, and then check
+        whether convergence has improved.
+
+  - case_id: high_amplitude_case
+    description: >
+      The reasoning flow is oscillating too strongly between expansion and
+      restraint. Rebalance is recommended before entering a convergence window.
+
+    oscillation_input:
+      yang_level: 0.86
+      yin_level: 0.24
+      balance_pressure: 0.81
+      current_phase: fire
+      active_phase_count: 5
+      expansion_depth: 5
+      compression_level: 0.28
+      critique_pressure: 0.39
+      memory_settling_required: true
+
+    stability_measurement:
+      phase_stability_score: 0.43
+      amplitude_delta: 0.62
+      context_drift: 0.41
+      redundancy_pressure: 0.66
+      stop_readiness: 0.39
+
+    threshold_evaluation:
+      threshold_band: high
+      maximum_delta: 0.35
+      warning_delta: 0.50
+      critical_delta: 0.70
+      threshold_exceeded: true
+
+    convergence_window:
+      status: unstable
+      confidence: 0.36
+      allowed_duration: brief
+
+    rebalance_timing:
+      rebalance_required: true
+      rebalance_interval: short
+      overcorrection_risk: medium
+      next_check: after_memory_return
+
+    stability_decision:
+      action: rebalance
+      reason: amplitude_delta_high
+
+      explanation: >
+        The amplitude delta is too high for convergence. The system should
+        rebalance through integration and compression before deciding whether
+        to continue, delay return, or stop.
+
+  - case_id: critical_amplitude_case
+    description: >
+      The amplitude delta is critical. The reasoning flow is unstable and
+      risks repeated over-expansion or hard suppression if not rebalanced.
+
+    oscillation_input:
+      yang_level: 0.94
+      yin_level: 0.17
+      balance_pressure: 0.90
+      current_phase: fire
+      active_phase_count: 6
+      expansion_depth: 7
+      compression_level: 0.18
+      critique_pressure: 0.29
+      memory_settling_required: true
+
+    stability_measurement:
+      phase_stability_score: 0.22
+      amplitude_delta: 0.77
+      context_drift: 0.58
+      redundancy_pressure: 0.79
+      stop_readiness: 0.24
+
+    threshold_evaluation:
+      threshold_band: critical
+      maximum_delta: 0.35
+      warning_delta: 0.50
+      critical_delta: 0.70
+      threshold_exceeded: true
+
+    convergence_window:
+      status: unstable
+      confidence: 0.18
+      allowed_duration: brief
+
+    rebalance_timing:
+      rebalance_required: true
+      rebalance_interval: immediate
+      overcorrection_risk: high
+      next_check: next_phase
+
+    stability_decision:
+      action: reject_convergence
+      reason: amplitude_delta_critical
+
+      explanation: >
+        The amplitude delta is critical. The system should reject convergence,
+        route back to integration, and prevent immediate opposite-action
+        overcorrection.
+
+overcorrection_prevention:
+  enabled: true
+
+  controls:
+    avoid_opposite_action_immediately: true
+    require_context_check_before_reversal: true
+    minimum_settling_period: short
+    maximum_rebalance_attempts: 2
+
+  unstable_loop_to_avoid:
+    - expand
+    - suppress
+    - expand
+    - suppress
+    - expand
+
+comparison_summary:
+  acceptable_amplitude:
+    amplitude_delta: 0.22
+    threshold_band: within_threshold
+    decision: stop_after_settling
+
+  warning_amplitude:
+    amplitude_delta: 0.42
+    threshold_band: warning
+    decision: compress_then_continue
+
+  high_amplitude:
+    amplitude_delta: 0.62
+    threshold_band: high
+    decision: rebalance
+
+  critical_amplitude:
+    amplitude_delta: 0.77
+    threshold_band: critical
+    decision: reject_convergence
+
+result:
+  principle: >
+    amplitude_delta should be used as a control-layer indicator for the
+    strength of oscillation between expansion and restraint. It should be
+    interpreted together with phase_stability_score, context_drift,
+    redundancy_pressure, and stop_readiness.
+
+  recommended_use: >
+    Use amplitude thresholds to decide whether reasoning may enter a
+    convergence window, requires compression, should be rebalanced, or must
+    reject convergence due to instability.
+
+validation_notes:
+  expected_valid_yaml: true
+  expected_version: "0.1.0"
+
+  expected_behavior:
+    - demonstrates_amplitude_threshold_bands
+    - detects_acceptable_warning_high_and_critical_amplitude
+    - avoids_premature_convergence
+    - supports_rebalance_timing_decisions
+    - prevents_overcorrection_loops
+
+  non_claims:
+    - "Does not claim benchmark-proven performance improvement."
+    - "Does not claim hardware-level energy reduction."
+    - "Does not treat amplitude_delta as a truth score."
+    - "Does not define a complete inference engine."
+
