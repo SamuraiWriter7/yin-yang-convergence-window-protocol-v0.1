@@ -1,0 +1,146 @@
+example:
+  id: basic-convergence-window-example
+  name: Basic Convergence Window Example
+  version: "0.1.0"
+  status: experimental
+
+  description: >
+    Demonstrates a basic convergence window decision after an oscillating
+    reasoning process has moved from expansion through integration and
+    compression into a stable enough state for stopping after settling.
+
+  related_spec:
+    - spec/convergence-window-protocol-v0.1.yaml
+    - schemas/convergence-window.schema.json
+
+input:
+  user_request: >
+    Summarize the protocol after explaining its main implications.
+
+  expected_behavior:
+    - provide_sufficient_explanation
+    - avoid_excessive_expansion
+    - compress_redundant_points
+    - enter_convergence_window_when_stable
+    - stop_after_settling
+
+initial_state:
+  current_phase: earth
+  state_mode: balanced
+
+  recent_route:
+    - wood
+    - fire
+    - earth
+    - metal
+    - water
+    - earth
+
+  reasoning_condition: >
+    The reasoning process has already expanded through Fire, received
+    critique through Metal, and compressed through Water. Earth is now
+    checking whether the result is stable enough to converge.
+
+oscillation_input:
+  yang_level: 0.68
+  yin_level: 0.46
+  balance_pressure: 0.62
+
+  current_phase: earth
+  active_phase_count: 3
+  expansion_depth: 3
+  compression_level: 0.57
+  critique_pressure: 0.41
+  memory_settling_required: false
+
+stability_measurement:
+  phase_stability_score: 0.74
+  amplitude_delta: 0.22
+  context_drift: 0.18
+  redundancy_pressure: 0.34
+  stop_readiness: 0.71
+
+  interpretation:
+    phase_stability: high
+    amplitude: within_threshold
+    context_drift: low
+    redundancy_pressure: acceptable
+    stop_readiness: sufficient
+
+convergence_window:
+  status: open
+  confidence: 0.76
+  allowed_duration: short
+
+  entry_conditions_met:
+    - phase_stability_score_at_or_above_minimum
+    - amplitude_delta_within_threshold
+    - context_drift_below_limit
+    - redundancy_pressure_below_limit
+    - stop_readiness_sufficient_or_rising
+
+  exit_conditions_detected: []
+
+rebalance_timing:
+  rebalance_required: false
+  rebalance_interval: none
+  overcorrection_risk: low
+  next_check: final_review
+
+  reason: >
+    The oscillation amplitude is within the acceptable threshold, context
+    drift is low, and stop readiness is sufficient. Rebalancing is not
+    required before final settling.
+
+settling_period:
+  required: true
+  duration: short
+
+  purpose: >
+    Allows the system to stabilize after compression and integration before
+    producing the final answer or stopping.
+
+stability_decision:
+  action: stop_after_settling
+  reason: convergence_window_open
+
+  explanation: >
+    The reasoning flow has entered a usable convergence window. Further
+    expansion is unlikely to add enough value, and the remaining content
+    can be finalized after a short settling period.
+
+result:
+  final_route:
+    - earth
+    - water
+    - stop
+
+  output_action: summarize_and_stop
+
+  retained_memory:
+    - "The reasoning process entered a convergence window after expansion, critique, and compression."
+    - "The amplitude delta stayed within the acceptable threshold."
+    - "No additional rebalance was required."
+
+  final_principle: >
+    A convergence window does not require perfect certainty. It indicates
+    that reasoning is stable enough to stop, delay, return, or continue
+    minimally.
+
+validation_notes:
+  expected_valid_yaml: true
+  expected_version: "0.1.0"
+
+  expected_behavior:
+    - detects_open_convergence_window
+    - confirms_phase_stability
+    - checks_amplitude_threshold
+    - avoids_unnecessary_rebalance
+    - stops_after_settling
+
+  non_claims:
+    - "Does not claim benchmark-proven performance improvement."
+    - "Does not claim hardware-level energy reduction."
+    - "Does not replace model architecture."
+    - "Does not define a complete inference engine."
+
