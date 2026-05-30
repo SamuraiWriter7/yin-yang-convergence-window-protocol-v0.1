@@ -1,0 +1,262 @@
+example:
+  id: phase-stability-score-example
+  name: Phase Stability Score Example
+  version: "0.1.0"
+  status: experimental
+
+  description: >
+    Demonstrates how phase_stability_score can be interpreted across low,
+    medium, and high stability states in a convergence-window control flow.
+
+  related_spec:
+    - spec/convergence-window-protocol-v0.1.yaml
+    - schemas/convergence-window.schema.json
+
+purpose: >
+  This example shows how phase stability may be evaluated after oscillating
+  reasoning has moved through expansion, critique, compression, and integration.
+
+input:
+  user_request: >
+    Decide whether the current reasoning state is stable enough to stop,
+    continue, rebalance, or enter a convergence window.
+
+  expected_behavior:
+    - evaluate_phase_stability
+    - compare_stability_against_thresholds
+    - detect_phase_conflict
+    - select_stability_decision
+    - avoid_premature_convergence
+
+phase_stability_model:
+  score_range:
+    minimum: 0.0
+    maximum: 1.0
+
+  interpretation:
+    low:
+      range: [0.0, 0.30]
+      meaning: unstable
+      typical_action: continue_integration_or_rebalance
+
+    medium:
+      range: [0.31, 0.70]
+      meaning: partially_stable
+      typical_action: monitor_or_compress_then_continue
+
+    high:
+      range: [0.71, 1.0]
+      meaning: stable
+      typical_action: enter_convergence_window_or_stop_after_settling
+
+stability_factors:
+  positive_factors:
+    - low_phase_conflict
+    - reduced_amplitude_delta
+    - stable_context_integration
+    - declining_redundancy_pressure
+    - rising_stop_readiness
+    - low_overcorrection_risk
+
+  negative_factors:
+    - unresolved_phase_conflict
+    - high_amplitude_delta
+    - context_drift
+    - rising_redundancy_pressure
+    - low_stop_readiness
+    - high_overcorrection_risk
+
+cases:
+  - case_id: low_stability_case
+    description: >
+      The reasoning flow is still unstable. Expansion and suppression are
+      switching too strongly, and integration has not yet stabilized.
+
+    oscillation_input:
+      yang_level: 0.88
+      yin_level: 0.22
+      balance_pressure: 0.79
+      current_phase: fire
+      active_phase_count: 5
+      expansion_depth: 6
+      compression_level: 0.19
+      critique_pressure: 0.33
+      memory_settling_required: false
+
+    stability_measurement:
+      phase_stability_score: 0.24
+      amplitude_delta: 0.66
+      context_drift: 0.52
+      redundancy_pressure: 0.71
+      stop_readiness: 0.28
+
+    detected_signals:
+      - high_amplitude_delta
+      - context_drift_high
+      - redundancy_pressure_high
+      - stop_readiness_low
+      - phase_conflict_detected
+
+    convergence_window:
+      status: unstable
+      confidence: 0.21
+      allowed_duration: brief
+
+    rebalance_timing:
+      rebalance_required: true
+      rebalance_interval: immediate
+      overcorrection_risk: medium
+      next_check: next_phase
+
+    stability_decision:
+      action: rebalance
+      reason: phase_stability_score_low
+
+      explanation: >
+        The system should not enter a convergence window. The phase stability
+        score is too low, amplitude delta is too high, and context drift has
+        increased. Rebalancing is required before stopping can be considered.
+
+  - case_id: medium_stability_case
+    description: >
+      The reasoning flow is partially stable. Some useful integration has
+      occurred, but redundancy and amplitude still require monitoring.
+
+    oscillation_input:
+      yang_level: 0.64
+      yin_level: 0.41
+      balance_pressure: 0.58
+      current_phase: earth
+      active_phase_count: 3
+      expansion_depth: 3
+      compression_level: 0.48
+      critique_pressure: 0.46
+      memory_settling_required: false
+
+    stability_measurement:
+      phase_stability_score: 0.58
+      amplitude_delta: 0.23
+      context_drift: 0.29
+      redundancy_pressure: 0.51
+      stop_readiness: 0.54
+
+    detected_signals:
+      - partial_context_integration
+      - amplitude_delta_within_threshold
+      - redundancy_pressure_medium
+      - stop_readiness_rising
+      - convergence_window_opening
+
+    convergence_window:
+      status: opening
+      confidence: 0.57
+      allowed_duration: short
+
+    rebalance_timing:
+      rebalance_required: false
+      rebalance_interval: moderate
+      overcorrection_risk: low
+      next_check: after_settling
+
+    stability_decision:
+      action: compress_then_continue
+      reason: phase_stability_score_medium
+
+      explanation: >
+        The system should not stop immediately. It should compress remaining
+        redundancy, allow a short settling period, and then re-check whether
+        the convergence window has opened.
+
+  - case_id: high_stability_case
+    description: >
+      The reasoning flow is stable enough to enter a convergence window.
+      Expansion has reduced, context is aligned, and stop readiness is high.
+
+    oscillation_input:
+      yang_level: 0.59
+      yin_level: 0.47
+      balance_pressure: 0.44
+      current_phase: earth
+      active_phase_count: 2
+      expansion_depth: 2
+      compression_level: 0.61
+      critique_pressure: 0.34
+      memory_settling_required: false
+
+    stability_measurement:
+      phase_stability_score: 0.82
+      amplitude_delta: 0.12
+      context_drift: 0.14
+      redundancy_pressure: 0.26
+      stop_readiness: 0.81
+
+    detected_signals:
+      - low_phase_conflict
+      - amplitude_delta_within_threshold
+      - context_drift_low
+      - redundancy_pressure_low
+      - stop_readiness_high
+
+    convergence_window:
+      status: open
+      confidence: 0.84
+      allowed_duration: short
+
+    rebalance_timing:
+      rebalance_required: false
+      rebalance_interval: none
+      overcorrection_risk: low
+      next_check: final_review
+
+    stability_decision:
+      action: stop_after_settling
+      reason: phase_stability_score_high
+
+      explanation: >
+        The system has entered a usable convergence window. The reasoning flow
+        is stable enough to stop after a short settling period.
+
+comparison_summary:
+  low_stability:
+    score: 0.24
+    convergence_window_status: unstable
+    decision: rebalance
+
+  medium_stability:
+    score: 0.58
+    convergence_window_status: opening
+    decision: compress_then_continue
+
+  high_stability:
+    score: 0.82
+    convergence_window_status: open
+    decision: stop_after_settling
+
+result:
+  principle: >
+    phase_stability_score should not be treated as a final truth score.
+    It is a control-layer indicator for deciding whether reasoning is still
+    unstable, partially stable, or stable enough to enter a convergence window.
+
+  recommended_use: >
+    Use phase_stability_score together with amplitude_delta, context_drift,
+    redundancy_pressure, and stop_readiness. Do not use it as a standalone
+    correctness measure.
+
+validation_notes:
+  expected_valid_yaml: true
+  expected_version: "0.1.0"
+
+  expected_behavior:
+    - demonstrates_low_medium_high_stability
+    - avoids_premature_convergence
+    - uses_phase_stability_score_as_control_signal
+    - combines_stability_with_amplitude_and_stop_readiness
+    - selects_rebalance_or_compression_or_stop_based_on_stability
+
+  non_claims:
+    - "Does not claim benchmark-proven performance improvement."
+    - "Does not claim hardware-level energy reduction."
+    - "Does not treat phase_stability_score as a truth score."
+    - "Does not define a complete inference engine."
+
