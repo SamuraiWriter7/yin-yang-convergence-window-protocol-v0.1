@@ -1,0 +1,393 @@
+example:
+  id: rebalance-interval-example
+  name: Rebalance Interval Example
+  version: "0.1.0"
+  status: experimental
+
+  description: >
+    Demonstrates how rebalance_interval can be used to determine when an
+    oscillating reasoning process should rebalance immediately, after a short
+    interval, after a settling period, or not at all.
+
+  related_spec:
+    - spec/convergence-window-protocol-v0.1.yaml
+    - schemas/convergence-window.schema.json
+
+purpose: >
+  This example shows how rebalance timing can prevent both runaway expansion
+  and excessive overcorrection in convergence-window control.
+
+input:
+  user_request: >
+    Determine whether the current reasoning process should rebalance now,
+    wait briefly, settle first, delay return, or avoid rebalancing.
+
+  expected_behavior:
+    - evaluate_rebalance_need
+    - select_rebalance_interval
+    - prevent_overcorrection
+    - preserve_stable_convergence
+    - decide_next_check_timing
+
+rebalance_interval_model:
+  allowed_values:
+    - immediate
+    - short
+    - moderate
+    - delayed
+    - none
+
+  interpretation:
+    immediate:
+      meaning: rebalance_now
+      use_when:
+        - critical_amplitude_delta
+        - high_context_drift
+        - severe_phase_conflict
+
+    short:
+      meaning: rebalance_after_brief_check
+      use_when:
+        - rising_redundancy_pressure
+        - medium_overcorrection_risk
+        - partial_stability_detected
+
+    moderate:
+      meaning: rebalance_after_settling
+      use_when:
+        - convergence_window_opening
+        - phase_stability_score_medium
+        - stop_readiness_rising
+
+    delayed:
+      meaning: rebalance_after_memory_or_critique_return
+      use_when:
+        - memory_settling_required
+        - delayed_critique_needed
+        - background_return_expected
+
+    none:
+      meaning: no_rebalance_required
+      use_when:
+        - phase_stability_score_high
+        - amplitude_delta_within_threshold
+        - stop_readiness_high
+        - context_drift_low
+
+default_policy:
+  avoid_immediate_reversal: true
+  require_context_check_before_reversal: true
+  require_settling_after_rebalance: true
+  maximum_rebalance_attempts: 2
+
+cases:
+  - case_id: immediate_rebalance_case
+    description: >
+      The reasoning process has exceeded the critical amplitude threshold.
+      Context drift is high and phase conflict is severe. Immediate rebalance
+      is required before convergence can be considered.
+
+    oscillation_input:
+      yang_level: 0.93
+      yin_level: 0.16
+      balance_pressure: 0.91
+      current_phase: fire
+      active_phase_count: 6
+      expansion_depth: 7
+      compression_level: 0.18
+      critique_pressure: 0.31
+      memory_settling_required: true
+
+    stability_measurement:
+      phase_stability_score: 0.21
+      amplitude_delta: 0.77
+      context_drift: 0.61
+      redundancy_pressure: 0.82
+      stop_readiness: 0.22
+
+    convergence_window:
+      status: unstable
+      confidence: 0.16
+      allowed_duration: brief
+
+    rebalance_timing:
+      rebalance_required: true
+      rebalance_interval: immediate
+      overcorrection_risk: high
+      next_check: next_phase
+
+    overcorrection_prevention:
+      avoid_opposite_action_immediately: true
+      require_context_check_before_reversal: true
+      minimum_settling_period: short
+      maximum_rebalance_attempts: 2
+
+    stability_decision:
+      action: rebalance
+      reason: critical_amplitude_and_high_context_drift
+
+      explanation: >
+        Immediate rebalance is required because the reasoning flow is unstable.
+        However, the system should avoid reversing directly into excessive
+        suppression without an Earth-based context check.
+
+  - case_id: short_rebalance_case
+    description: >
+      The reasoning process is not critical, but redundancy pressure and
+      oscillation amplitude are rising. A short rebalance interval is selected
+      to prevent drift without causing premature suppression.
+
+    oscillation_input:
+      yang_level: 0.78
+      yin_level: 0.35
+      balance_pressure: 0.69
+      current_phase: earth
+      active_phase_count: 4
+      expansion_depth: 4
+      compression_level: 0.39
+      critique_pressure: 0.48
+      memory_settling_required: false
+
+    stability_measurement:
+      phase_stability_score: 0.54
+      amplitude_delta: 0.43
+      context_drift: 0.31
+      redundancy_pressure: 0.58
+      stop_readiness: 0.49
+
+    convergence_window:
+      status: opening
+      confidence: 0.52
+      allowed_duration: brief
+
+    rebalance_timing:
+      rebalance_required: true
+      rebalance_interval: short
+      overcorrection_risk: medium
+      next_check: after_settling
+
+    overcorrection_prevention:
+      avoid_opposite_action_immediately: true
+      require_context_check_before_reversal: true
+      minimum_settling_period: brief
+      maximum_rebalance_attempts: 2
+
+    stability_decision:
+      action: compress_then_continue
+      reason: rising_redundancy_and_partial_stability
+
+      explanation: >
+        A short rebalance interval is appropriate. The system should compress
+        redundancy, settle briefly, and then re-check whether the convergence
+        window has opened.
+
+  - case_id: moderate_rebalance_case
+    description: >
+      The reasoning process is partially stable. The convergence window is
+      opening, but the system should wait through a moderate settling interval
+      before deciding whether to stop or continue minimally.
+
+    oscillation_input:
+      yang_level: 0.66
+      yin_level: 0.43
+      balance_pressure: 0.55
+      current_phase: earth
+      active_phase_count: 3
+      expansion_depth: 3
+      compression_level: 0.52
+      critique_pressure: 0.40
+      memory_settling_required: false
+
+    stability_measurement:
+      phase_stability_score: 0.66
+      amplitude_delta: 0.23
+      context_drift: 0.24
+      redundancy_pressure: 0.42
+      stop_readiness: 0.63
+
+    convergence_window:
+      status: opening
+      confidence: 0.64
+      allowed_duration: short
+
+    rebalance_timing:
+      rebalance_required: false
+      rebalance_interval: moderate
+      overcorrection_risk: low
+      next_check: after_settling
+
+    overcorrection_prevention:
+      avoid_opposite_action_immediately: true
+      require_context_check_before_reversal: false
+      minimum_settling_period: short
+      maximum_rebalance_attempts: 1
+
+    stability_decision:
+      action: enter_convergence_window
+      reason: convergence_window_opening_and_stop_readiness_rising
+
+      explanation: >
+        The system does not need immediate rebalance. It should allow a
+        moderate settling interval and then enter the convergence window if
+        stability continues to improve.
+
+  - case_id: delayed_rebalance_case
+    description: >
+      The reasoning process requires memory settling or delayed critique.
+      Rebalance should not occur immediately because useful context may return
+      through Water or Metal after a delay.
+
+    oscillation_input:
+      yang_level: 0.61
+      yin_level: 0.56
+      balance_pressure: 0.48
+      current_phase: water
+      active_phase_count: 3
+      expansion_depth: 2
+      compression_level: 0.66
+      critique_pressure: 0.45
+      memory_settling_required: true
+
+    stability_measurement:
+      phase_stability_score: 0.69
+      amplitude_delta: 0.05
+      context_drift: 0.19
+      redundancy_pressure: 0.33
+      stop_readiness: 0.61
+
+    convergence_window:
+      status: opening
+      confidence: 0.68
+      allowed_duration: short
+
+    rebalance_timing:
+      rebalance_required: false
+      rebalance_interval: delayed
+      overcorrection_risk: low
+      next_check: after_memory_return
+
+    overcorrection_prevention:
+      avoid_opposite_action_immediately: true
+      require_context_check_before_reversal: true
+      minimum_settling_period: short
+      maximum_rebalance_attempts: 1
+
+    stability_decision:
+      action: delay_return
+      reason: memory_settling_required
+
+      explanation: >
+        Delayed rebalance is appropriate because Water is still settling
+        useful memory. The system should wait for memory return before making
+        a final convergence or stopping decision.
+
+  - case_id: no_rebalance_case
+    description: >
+      The reasoning process is already stable. The convergence window is open,
+      amplitude is within threshold, and stop readiness is high. No rebalance
+      is required.
+
+    oscillation_input:
+      yang_level: 0.57
+      yin_level: 0.49
+      balance_pressure: 0.36
+      current_phase: earth
+      active_phase_count: 2
+      expansion_depth: 2
+      compression_level: 0.63
+      critique_pressure: 0.29
+      memory_settling_required: false
+
+    stability_measurement:
+      phase_stability_score: 0.84
+      amplitude_delta: 0.08
+      context_drift: 0.12
+      redundancy_pressure: 0.21
+      stop_readiness: 0.86
+
+    convergence_window:
+      status: open
+      confidence: 0.88
+      allowed_duration: short
+
+    rebalance_timing:
+      rebalance_required: false
+      rebalance_interval: none
+      overcorrection_risk: low
+      next_check: final_review
+
+    overcorrection_prevention:
+      avoid_opposite_action_immediately: true
+      require_context_check_before_reversal: false
+      minimum_settling_period: brief
+      maximum_rebalance_attempts: 0
+
+    stability_decision:
+      action: stop_after_settling
+      reason: stable_convergence_window_open
+
+      explanation: >
+        No rebalance is required. The system is stable enough to stop after a
+        brief settling period.
+
+comparison_summary:
+  immediate:
+    amplitude_delta: 0.77
+    phase_stability_score: 0.21
+    convergence_window_status: unstable
+    decision: rebalance
+
+  short:
+    amplitude_delta: 0.43
+    phase_stability_score: 0.54
+    convergence_window_status: opening
+    decision: compress_then_continue
+
+  moderate:
+    amplitude_delta: 0.23
+    phase_stability_score: 0.66
+    convergence_window_status: opening
+    decision: enter_convergence_window
+
+  delayed:
+    amplitude_delta: 0.05
+    phase_stability_score: 0.69
+    convergence_window_status: opening
+    decision: delay_return
+
+  none:
+    amplitude_delta: 0.08
+    phase_stability_score: 0.84
+    convergence_window_status: open
+    decision: stop_after_settling
+
+result:
+  principle: >
+    rebalance_interval should be selected according to instability level,
+    memory-settling requirements, overcorrection risk, and convergence-window
+    status. Immediate rebalance is useful for critical instability, but stable
+    or settling states may require delayed or no rebalance.
+
+  recommended_use: >
+    Use rebalance_interval together with phase_stability_score,
+    amplitude_delta, context_drift, redundancy_pressure, stop_readiness, and
+    memory_settling_required. Do not rebalance automatically whenever any
+    signal rises.
+
+validation_notes:
+  expected_valid_yaml: true
+  expected_version: "0.1.0"
+
+  expected_behavior:
+    - demonstrates_rebalance_interval_options
+    - distinguishes_immediate_short_moderate_delayed_and_none
+    - prevents_overcorrection_loops
+    - supports_memory_settling_before_rebalance
+    - avoids_unnecessary_rebalance_when_convergence_is_stable
+
+  non_claims:
+    - "Does not claim benchmark-proven performance improvement."
+    - "Does not claim hardware-level energy reduction."
+    - "Does not guarantee safer AI behavior."
+    - "Does not define a complete inference engine."
+
