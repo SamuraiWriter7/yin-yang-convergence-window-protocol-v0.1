@@ -1,0 +1,592 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://example.org/schemas/convergence-window.schema.json",
+  "title": "Yin-Yang Convergence Window Protocol Schema",
+  "description": "Schema for validating the Yin-Yang Convergence Window Protocol v0.1 specification.",
+  "type": "object",
+  "required": [
+    "protocol",
+    "scope",
+    "core_principle",
+    "conceptual_flow",
+    "control_layers",
+    "convergence_window",
+    "phase_stability",
+    "amplitude_threshold",
+    "rebalance_timing",
+    "overcorrection_prevention",
+    "settling_period",
+    "stability_decisions",
+    "example_profile"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "protocol": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "version",
+        "status",
+        "release_type",
+        "purpose",
+        "summary",
+        "related_protocols",
+        "non_goals"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string",
+          "pattern": "^0\\.1\\.0$"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["draft", "experimental", "stable"]
+        },
+        "release_type": {
+          "type": "string"
+        },
+        "purpose": {
+          "type": "string"
+        },
+        "summary": {
+          "type": "string"
+        },
+        "related_protocols": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["name", "relationship", "role"],
+            "additionalProperties": true,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "relationship": {
+                "type": "string"
+              },
+              "role": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "non_goals": {
+          "$ref": "#/definitions/stringList"
+        }
+      }
+    },
+    "scope": {
+      "type": "object",
+      "required": ["included", "excluded"],
+      "additionalProperties": true,
+      "properties": {
+        "included": {
+          "$ref": "#/definitions/stringList"
+        },
+        "excluded": {
+          "$ref": "#/definitions/stringList"
+        }
+      }
+    },
+    "core_principle": {
+      "type": "string"
+    },
+    "conceptual_flow": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["step", "description"],
+        "additionalProperties": true,
+        "properties": {
+          "step": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "control_layers": {
+      "type": "object",
+      "required": [
+        "oscillation_input_layer",
+        "stability_measurement_layer",
+        "convergence_window_layer",
+        "rebalance_timing_layer",
+        "stability_decision_layer"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "oscillation_input_layer": {
+          "$ref": "#/definitions/inputLayer"
+        },
+        "stability_measurement_layer": {
+          "$ref": "#/definitions/measurementLayer"
+        },
+        "convergence_window_layer": {
+          "$ref": "#/definitions/convergenceLayer"
+        },
+        "rebalance_timing_layer": {
+          "$ref": "#/definitions/rebalanceLayer"
+        },
+        "stability_decision_layer": {
+          "$ref": "#/definitions/decisionLayer"
+        }
+      }
+    },
+    "convergence_window": {
+      "type": "object",
+      "required": [
+        "default_policy",
+        "entry_conditions",
+        "exit_conditions"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "default_policy": {
+          "type": "object",
+          "required": [
+            "status",
+            "minimum_phase_stability_score",
+            "maximum_amplitude_delta",
+            "maximum_context_drift",
+            "maximum_redundancy_pressure",
+            "minimum_stop_readiness"
+          ],
+          "additionalProperties": true,
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": ["closed", "opening", "open", "unstable", "expired"]
+            },
+            "minimum_phase_stability_score": {
+              "$ref": "#/definitions/normalizedFloat"
+            },
+            "maximum_amplitude_delta": {
+              "$ref": "#/definitions/normalizedFloat"
+            },
+            "maximum_context_drift": {
+              "$ref": "#/definitions/normalizedFloat"
+            },
+            "maximum_redundancy_pressure": {
+              "$ref": "#/definitions/normalizedFloat"
+            },
+            "minimum_stop_readiness": {
+              "$ref": "#/definitions/normalizedFloat"
+            }
+          }
+        },
+        "entry_conditions": {
+          "$ref": "#/definitions/stringList"
+        },
+        "exit_conditions": {
+          "$ref": "#/definitions/stringList"
+        }
+      }
+    },
+    "phase_stability": {
+      "type": "object",
+      "required": ["interpretation", "contributing_factors"],
+      "additionalProperties": true,
+      "properties": {
+        "interpretation": {
+          "type": "object",
+          "required": ["low", "medium", "high"],
+          "additionalProperties": true,
+          "properties": {
+            "low": {
+              "$ref": "#/definitions/interpretationBand"
+            },
+            "medium": {
+              "$ref": "#/definitions/interpretationBand"
+            },
+            "high": {
+              "$ref": "#/definitions/interpretationBand"
+            }
+          }
+        },
+        "contributing_factors": {
+          "$ref": "#/definitions/stringList"
+        }
+      }
+    },
+    "amplitude_threshold": {
+      "type": "object",
+      "required": ["default", "interpretation", "examples"],
+      "additionalProperties": true,
+      "properties": {
+        "default": {
+          "type": "object",
+          "required": [
+            "maximum_delta",
+            "warning_delta",
+            "critical_delta"
+          ],
+          "additionalProperties": true,
+          "properties": {
+            "maximum_delta": {
+              "$ref": "#/definitions/normalizedFloat"
+            },
+            "warning_delta": {
+              "$ref": "#/definitions/normalizedFloat"
+            },
+            "critical_delta": {
+              "$ref": "#/definitions/normalizedFloat"
+            }
+          }
+        },
+        "interpretation": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "examples": {
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "#/definitions/amplitudeExample"
+          }
+        }
+      }
+    },
+    "rebalance_timing": {
+      "type": "object",
+      "required": ["default_policy", "timing_options"],
+      "additionalProperties": true,
+      "properties": {
+        "default_policy": {
+          "type": "object",
+          "required": [
+            "minimum_interval",
+            "avoid_immediate_reversal",
+            "overcorrection_limit",
+            "require_settling_after_rebalance"
+          ],
+          "additionalProperties": true,
+          "properties": {
+            "minimum_interval": {
+              "type": "string"
+            },
+            "avoid_immediate_reversal": {
+              "type": "boolean"
+            },
+            "overcorrection_limit": {
+              "type": "string"
+            },
+            "require_settling_after_rebalance": {
+              "type": "boolean"
+            }
+          }
+        },
+        "timing_options": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["use_when"],
+            "additionalProperties": true,
+            "properties": {
+              "use_when": {
+                "$ref": "#/definitions/stringList"
+              }
+            }
+          }
+        }
+      }
+    },
+    "overcorrection_prevention": {
+      "type": "object",
+      "required": ["purpose", "unstable_loop_example", "controls"],
+      "additionalProperties": true,
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "unstable_loop_example": {
+          "$ref": "#/definitions/stringList"
+        },
+        "controls": {
+          "type": "object",
+          "required": [
+            "minimum_settling_period",
+            "maximum_rebalance_attempts",
+            "avoid_opposite_action_immediately",
+            "require_context_check_before_reversal"
+          ],
+          "additionalProperties": true,
+          "properties": {
+            "minimum_settling_period": {
+              "type": "string"
+            },
+            "maximum_rebalance_attempts": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "avoid_opposite_action_immediately": {
+              "type": "boolean"
+            },
+            "require_context_check_before_reversal": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    },
+    "settling_period": {
+      "type": "object",
+      "required": ["purpose", "allowed_values", "default", "use_when"],
+      "additionalProperties": true,
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "allowed_values": {
+          "$ref": "#/definitions/stringList"
+        },
+        "default": {
+          "type": "string"
+        },
+        "use_when": {
+          "$ref": "#/definitions/stringList"
+        }
+      }
+    },
+    "stability_decisions": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["use_when", "description"],
+        "additionalProperties": true,
+        "properties": {
+          "use_when": {
+            "$ref": "#/definitions/stringList"
+          },
+          "description": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "example_profile": {
+      "type": "object",
+      "required": [
+        "name",
+        "description",
+        "input_state",
+        "measurement",
+        "convergence_window",
+        "rebalance_timing",
+        "stability_decision"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "input_state": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "measurement": {
+          "type": "object",
+          "additionalProperties": true,
+          "properties": {
+            "phase_stability_score": {
+              "$ref": "#/definitions/normalizedFloat"
+            },
+            "amplitude_delta": {
+              "$ref": "#/definitions/normalizedFloat"
+            },
+            "context_drift": {
+              "$ref": "#/definitions/normalizedFloat"
+            },
+            "redundancy_pressure": {
+              "$ref": "#/definitions/normalizedFloat"
+            },
+            "stop_readiness": {
+              "$ref": "#/definitions/normalizedFloat"
+            }
+          }
+        },
+        "convergence_window": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "rebalance_timing": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "stability_decision": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "validation_notes": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "definitions": {
+    "normalizedFloat": {
+      "type": "number",
+      "minimum": 0.0,
+      "maximum": 1.0
+    },
+    "stringList": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "numericRange": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "items": {
+        "type": "number"
+      }
+    },
+    "inputLayer": {
+      "type": "object",
+      "required": ["purpose", "inputs"],
+      "additionalProperties": true,
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "inputs": {
+          "$ref": "#/definitions/stringList"
+        }
+      }
+    },
+    "measurementLayer": {
+      "type": "object",
+      "required": ["purpose", "metrics"],
+      "additionalProperties": true,
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "metrics": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["type", "description"],
+            "additionalProperties": true,
+            "properties": {
+              "type": {
+                "type": "string"
+              },
+              "range": {
+                "$ref": "#/definitions/numericRange"
+              },
+              "description": {
+                "type": "string"
+              }
+            }
+          }
+        }
+      }
+    },
+    "convergenceLayer": {
+      "type": "object",
+      "required": ["purpose", "fields"],
+      "additionalProperties": true,
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "rebalanceLayer": {
+      "type": "object",
+      "required": ["purpose", "fields"],
+      "additionalProperties": true,
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "fields": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      }
+    },
+    "decisionLayer": {
+      "type": "object",
+      "required": ["purpose", "allowed_actions"],
+      "additionalProperties": true,
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "allowed_actions": {
+          "$ref": "#/definitions/stringList"
+        }
+      }
+    },
+    "interpretationBand": {
+      "type": "object",
+      "required": ["range", "meaning", "typical_action"],
+      "additionalProperties": true,
+      "properties": {
+        "range": {
+          "$ref": "#/definitions/numericRange"
+        },
+        "meaning": {
+          "type": "string"
+        },
+        "typical_action": {
+          "type": "string"
+        }
+      }
+    },
+    "amplitudeExample": {
+      "type": "object",
+      "required": [
+        "yang_level",
+        "yin_level",
+        "amplitude_delta",
+        "decision"
+      ],
+      "additionalProperties": true,
+      "properties": {
+        "yang_level": {
+          "$ref": "#/definitions/normalizedFloat"
+        },
+        "yin_level": {
+          "$ref": "#/definitions/normalizedFloat"
+        },
+        "amplitude_delta": {
+          "$ref": "#/definitions/normalizedFloat"
+        },
+        "decision": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
+
