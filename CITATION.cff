@@ -1,0 +1,52 @@
+cff-version: 1.2.0
+message: "If you use this specification, please cite it as below."
+
+title: "Yin-Yang Convergence Window Protocol v0.1.0"
+version: "0.1.0"
+date-released: "2026-05-31"
+
+type: software
+license: MIT
+
+authors:
+  - name: "SamuraiWriter7"
+
+repository-code: "https://github.com/SamuraiWriter7/yin-yang-convergence-window-protocol-v0.1"
+
+abstract: >
+  Yin-Yang Convergence Window Protocol v0.1.0 is a draft structural protocol
+  for convergence window design, phase stability scoring, amplitude threshold
+  control, rebalance timing, overcorrection prevention, settling period control,
+  and stability decisions in oscillating reasoning systems. It extends the
+  reasoning-control lineage of Yin-Yang Five-Phase Reasoning Protocol and
+  Yin-Yang Oscillation Control Protocol by focusing on when oscillating
+  reasoning has become stable enough to stop, delay, return, rebalance, or
+  continue minimally.
+
+keywords:
+  - artificial-intelligence
+  - reasoning-protocol
+  - adaptive-reasoning
+  - convergence-window
+  - phase-stability
+  - amplitude-threshold
+  - rebalance-timing
+  - overcorrection-prevention
+  - settling-period
+  - stability-decision
+  - yin-yang
+  - oscillation-control
+  - multi-agent-reasoning
+  - stopping-control
+  - memory-aware-routing
+
+preferred-citation:
+  type: software
+  title: "Yin-Yang Convergence Window Protocol v0.1.0"
+  version: "0.1.0"
+  date-released: "2026-05-31"
+  license: MIT
+  authors:
+    - name: "SamuraiWriter7"
+  repository-code: "https://github.com/SamuraiWriter7/yin-yang-convergence-window-protocol-v0.1"
+
